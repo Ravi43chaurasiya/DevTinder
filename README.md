@@ -140,6 +140,77 @@ app.get(/.*fly$/, (req, res) => {
   res.send('/.*fly$/')
 })
 ```
+## Route parameters
+Route parameters are named URL segments that are used to capture the values specified at their position in the URL. The captured values are populated in the req.params object, with the name of the route parameter specified in the path as their respective keys.
+```
+Route path: /users/:userId/books/:bookId
+Request URL: http://localhost:3000/users/34/books/8989
+req.params: { "userId": "34", "bookId": "8989" }
+```
+
+To define routes with route parameters, simply specify the route parameters in the path of the route as shown below.
+```
+app.get('/users/:userId/books/:bookId', (req, res) => {
+  res.send(req.params)
+})
+```
+Since the hyphen (-) and the dot (.) are interpreted literally, they can be used along with route parameters for useful purposes.
+```
+Route path: /flights/:from-:to
+Request URL: http://localhost:3000/flights/LAX-SFO
+req.params: { "from": "LAX", "to": "SFO" }
+```
+```
+Route path: /plantae/:genus.:species
+Request URL: http://localhost:3000/plantae/Prunus.persica
+req.params: { "genus": "Prunus", "species": "persica" }
+```
+To have more control over the exact string that can be matched by a route parameter, you can append a regular expression in parentheses (()):
+```
+Route path: /user/:userId(\d+)
+Request URL: http://localhost:3000/user/42
+req.params: {"userId": "42"}
+```
+To ensure that only certain kinds of values (like digits) can match the route, you can append a regular expression in parentheses right after the parameter name.
+```javascript
+app.get('/user/:userId(\\d+)', (req, res) => {
+  res.send(`User ID: ${req.params.userId}`);
+});
+```
+```
+Here’s what’s happening:
+:userId defines a route parameter named userId.
+(\\d+) is a regular expression that restricts the parameter to one or more digits (\\d+).
+\\d matches any digit (0-9).
++ means "one or more occurrences".
+This means only URLs like /user/42 or /user/123 will match the route.
+```
+```
+Request URL: http://localhost:3000/user/42
+Output: User ID: 42
+Request URL: http://localhost:3000/user/abc
+This request will not match the route, because abc is not a digit, and the regular expression \\d+ only allows digits.
+```
++ More Examples
+Alphanumeric Usernames
+
+```javascript
+app.get('/profile/:username([a-zA-Z0-9_]+)', (req, res) => {
+  res.send(`Username: ${req.params.username}`);
+});
+```
+
+This route will only match if the username contains letters, digits, or underscores.
+
++ Date Format (YYYY-MM-DD)
+
+```javascript
+app.get('/date/:date(\\d{4}-\\d{2}-\\d{2})', (req, res) => {
+  res.send(`Date: ${req.params.date}`);
+});
+```
+This route will match dates in the YYYY-MM-DD format, such as /date/2025-01-15.
+
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).
