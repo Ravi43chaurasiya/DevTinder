@@ -12,8 +12,20 @@ const app = express();
 //   res.send("Hello World from test API!");
 // });
 
-app.get("/user",(req,res)=>{
+app.get("/use?r",(req,res)=>{
   res.send("data has been fetched successfully.");
+})
+
+app.get("/a(bc)?d",(req,res)=>{
+  res.send("testing out string pattern in route")
+})
+
+app.get(/a/,(req,res)=>{
+  res.send("testing out regex in route")
+})
+
+app.get(/.*fly$/,(req,res)=>{
+  res.send("testing out some more regex in route")
 })
 
 app.post("/user",(req,res)=>{
