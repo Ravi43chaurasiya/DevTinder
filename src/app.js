@@ -1,5 +1,100 @@
 const express = require("express");
+
+
 const app = express();
+const {adminAuth,userAuth}=require("./middleware/auth.js");
+
+// Handle Auth middleware for all GET, POST,.....requests.
+app.use("/admin",adminAuth)
+
+app.post("/user/login",(req,res)=>{
+  res.send("login is successful");
+})
+
+app.get("/user/data",userAuth,(req,res)=>{
+  res.send("fetched user data")
+})
+
+app.get("/admin/getAllData",(req,res)=>{
+  //
+  res.send("all data fetched")
+})
+
+app.delete("/admin/deleteUser",(req,res)=>{
+  //
+  res.send("user has been deleted");
+})
+
+// Route handlers
+
+// app.get("/example/a",(req,res)=>{
+//   res.send("route handler a");
+// })
+
+// app.get("/example/b",(req,res,next)=>{
+//   console.log("the response will be sent by the next function ...")
+//   res.send("hello from B1!")
+//   next()
+// },(req,res)=>{
+//   // res.send("hello from B !")
+//   console.log("the response will be sent by the next function 2...")
+//   // res.send("hello from B2!")
+// })
+
+// const cb0=function(req,res,next){
+//   console.log("cb0");
+//   next();
+// }
+// const cb1=function(req,res,next){
+//   console.log("cb1");
+//   next();
+// }
+
+// const cb2=function(req,res){
+//   res.send("Hello from c!")
+// }
+
+// //app.get("/example/c",[cb0,cb1,cb2]);
+
+// //or
+
+// app.get("/example/d",[(req,res,next)=>{
+//   console.log("d1");
+//   next();
+// },(req,res,next)=>{
+//   console.log("d2");
+//   next();
+// },(req,res)=>{
+//   res.send("hello from d!");
+// }])
+
+// app.get("/example/e",[cb0,cb1],(req,res)=>{
+//   res.send("hello from E!");
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // app.get("/", function (req, res) {
 //   res.send("Hello World!");
@@ -35,10 +130,10 @@ const app = express();
 //   console.log(`User ID: ${req.params.userId}`)
 // });
 
-app.get('/user/:username([a-zA-Z0-9@_-]+)', (req, res) => {
-  res.send(`Username: ${req.params.username}`);
+// app.get('/user/:username([a-zA-Z0-9@_-]+)', (req, res) => {
+//   res.send(`Username: ${req.params.username}`);
   
-});
+// });
 
 
 // app.get("/a(bc)?d",(req,res)=>{
