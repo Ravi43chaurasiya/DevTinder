@@ -2,28 +2,72 @@ const express = require("express");
 
 
 const app = express();
-const {adminAuth,userAuth}=require("./middleware/auth.js");
 
-// Handle Auth middleware for all GET, POST,.....requests.
-app.use("/admin",adminAuth)
+app.get("/getUserData",(req,res)=>{
 
-app.post("/user/login",(req,res)=>{
-  res.send("login is successful");
+  try{
+    throw new Error("custom error");
+    respond.send("user data sent");
+  }
+  catch(err)
+  {
+    res.status(500).send("something went wrong,checking from try catch block");
+  }
+  
 })
 
-app.get("/user/data",userAuth,(req,res)=>{
-  res.send("fetched user data")
+app.use("/",(err,req,res,next)=>{
+  if(err)
+  {
+    //log uour error
+    res.status(500).send("something went wrong");
+  }
 })
 
-app.get("/admin/getAllData",(req,res)=>{
-  //
-  res.send("all data fetched")
-})
 
-app.delete("/admin/deleteUser",(req,res)=>{
-  //
-  res.send("user has been deleted");
-})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const {adminAuth,userAuth}=require("./middleware/auth.js");
+
+// // Handle Auth middleware for all GET, POST,.....requests.
+// app.use("/admin",adminAuth)
+
+// app.post("/user/login",(req,res)=>{
+//   res.send("login is successful");
+// })
+
+// app.get("/user/data",userAuth,(req,res)=>{
+//   res.send("fetched user data")
+// })
+
+// app.get("/admin/getAllData",(req,res)=>{
+//   //
+//   res.send("all data fetched")
+// })
+
+// app.delete("/admin/deleteUser",(req,res)=>{
+//   //
+//   res.send("user has been deleted");
+// })
 
 // Route handlers
 
