@@ -338,6 +338,28 @@ const User=mongoose.model("User",userSchema);
 
 module.exports=User;
 ```
+- Creating post /signup api, to add data to database
+```javascript
+const User=require("./models/user");
+app.post("/signup",async(req,res)=>{
+  const userObj={
+    firstName:"Rahul",
+    lastName:"Chaurasiya",
+    emailId:"rahul@chaurasiya.com",
+    password:"rahul@321"
+  }
+  const user=new User(userObj);
+  try{
+    await user.save();
+    res.send(user);
+  }
+  catch(err){
+    res.status(400).send("error saving database");
+  }
+ 
+})
+```
+
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).
