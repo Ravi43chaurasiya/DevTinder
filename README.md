@@ -359,6 +359,22 @@ app.post("/signup",async(req,res)=>{
  
 })
 ```
+- making post /signup api dynamic , use of express.jason() middleware.
+```javascript
+app.use(express.json())
+app.post("/signup",async(req,res)=>{
+  console.log(req.body);
+  const user=new User(req.body);
+  try{
+    await user.save();
+    res.send(user);
+  }
+  catch(err){
+    res.status(400).send("error saving database");
+  }
+ 
+})
+```
 
 ---
 
