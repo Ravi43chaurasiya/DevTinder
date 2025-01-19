@@ -272,7 +272,42 @@ app.get('/example/d', [cb0, cb1], (req, res, next) => {
 # difference Between app.use and app.all in express
   + to know more in detail search in chatGPT.
 
+# Error handling using app.use , try and catch block.
 
+# Database , Schema and models
+
+- create a free cluster on MongoDB Atlas
+- install mongoose library
+```javascript
+npm i mongoose
+```
+- connect your Application to the database
+```javascript
+const mongoose=require("mongoose");
+
+
+const connectDB=async()=>{
+await mongoose.connect("mongodb+srv://ravi8601150552:A09rkXvro3piYine@cluster0.tzrlbey.mongodb.net/devTinder");
+}
+
+module.exports=connectDB;
+```
+- call the connectDB function and connect the DB before starting the application, example:
+```javascript
+const express = require("express");
+const connectDB=require("./config/database")
+
+const app = express();
+
+connectDB().then(()=>{
+  console.log("Database connection is successfull")
+  app.listen(3000, () => {
+    console.log("server is running successfully on port 3000...");
+  });
+})
+.catch((err)=>{
+  console.error("database can not be connected");
+})
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).
