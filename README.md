@@ -375,6 +375,40 @@ app.post("/signup",async(req,res)=>{
  
 })
 ```
+- model.findOne with duplicate emailIDs, which object is returned.
++ to know more about it search in chatgpt.
+- API- get user by email
+```javascript
+app.get("/user",async(req,res)=>{
+  const userEmail=req.body.emailId;
+  try{
+    
+    const users= await User.findOne({emailId:userEmail});
+    if(users.length===0){
+      res.status(404).send("User not found");
+    }
+    else{
+      res.send(users);
+    }
+  }
+  catch(err){
+    res.status(404).send("Something went wrong!");
+  }
+
+})
+```
+- API - feed API- get/feed- get all the users from the database
+```javascript
+app.get("/feed",async(req,res)=>{
+
+  try{
+    const users=await User.find({});
+    res.send(users);
+  }
+  catch(err){
+    res.status(404).send("Something went wrong!");
+  }
+})
 
 ---
 
