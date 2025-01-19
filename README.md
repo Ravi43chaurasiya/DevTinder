@@ -308,6 +308,36 @@ connectDB().then(()=>{
 .catch((err)=>{
   console.error("database can not be connected");
 })
+```
+- creating User Schema and Model
+```javascript
+const mongoose=require("mongoose");
+
+const userSchema=new mongoose.Schema({
+  firstName:{
+    type:String
+  },
+  lastName:{
+    type:String
+  },
+  emailId:{
+    type:String
+  },
+  password:{
+    type:String
+  },
+  age:{
+    type:Number
+  },
+  gender:{
+    type:String
+  }
+});
+
+const User=mongoose.model("User",userSchema);
+
+module.exports=User;
+```
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).
