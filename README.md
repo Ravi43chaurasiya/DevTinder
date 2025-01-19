@@ -409,6 +409,50 @@ app.get("/feed",async(req,res)=>{
     res.status(404).send("Something went wrong!");
   }
 })
+```
+
+- find user by Id
+```javascript
+app.get("/userById",async(req,res)=>{
+  try{
+    const user=await User.findById(req.body._id);
+    res.send(user);
+  }
+  catch(err){
+    res.status(404).send("Something went wrong!");
+  }
+})
+```
+- create a delete user API
+```javascript
+app.delete("/user",async(req,res)=>{
+  const userId=req.body._id;
+  try{
+    await User.findByIdAndDelete(userId);
+    res.send("user has been deleted")
+  }
+  catch(err)
+  {
+    res.status(404).send("Something went wrong!");
+  }
+})
+```
+- explore about patch vs put
+- API - update a user
+```javascript
+app.patch("/user",async(req,res)=>{
+  const userId=req.body._id;
+  try{
+    await User.findByIdAndUpdate(userId,req.body);
+    res.send("user has been updated");
+  }
+  catch(err)
+  {
+    res.status(404).send("Something went wrong!");
+  }
+})
+```
+- explore the mongoose documentation to learn more.
 
 ---
 

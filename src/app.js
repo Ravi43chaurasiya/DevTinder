@@ -45,6 +45,41 @@ app.get("/feed",async(req,res)=>{
     res.status(404).send("Something went wrong!");
   }
 })
+app.get("/userById",async(req,res)=>{
+  try{
+    const user=await User.findById(req.body._id);
+    res.send(user);
+  }
+  catch(err){
+    res.status(404).send("Something went wrong!");
+  }
+})
+// delete a user from database
+app.delete("/user",async(req,res)=>{
+  const userId=req.body._id;
+  try{
+    await User.findByIdAndDelete(userId);
+    res.send("user has been deleted")
+  }
+  catch(err)
+  {
+    res.status(404).send("Something went wrong!");
+  }
+})
+
+// API- update a User
+
+app.patch("/user",async(req,res)=>{
+  const userId=req.body._id;
+  try{
+    await User.findByIdAndUpdate(userId,req.body);
+    res.send("user has been updated");
+  }
+  catch(err)
+  {
+    res.status(404).send("Something went wrong!");
+  }
+})
  
 
 
