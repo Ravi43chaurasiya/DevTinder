@@ -2,24 +2,51 @@ const mongoose=require("mongoose");
 
 const userSchema=new mongoose.Schema({
   firstName:{
-    type:String
+    type:String,
+    required: true,
+    minLength: 4 ,
+    maxLength: 100
+
   },
   lastName:{
     type:String
   },
   emailId:{
-    type:String
+    type:String,
+    required:true,
+    unique: true,
+    lowercase: true,
+    trim: true
+
   },
   password:{
-    type:String
+    type:String,
+    required:true
   },
   age:{
-    type:Number
+    type:Number,
+    min: 18
   },
   gender:{
-    type:String
+    type:String,
+    validate(value){
+      if(!["male","female","oyhers"].includes(value)){
+        throw new Error("Gender data is not valid"); 
+      }
+    }
+  },
+  photoUrl:{
+    type: String,
+    default: "https://weimaracademy.org/dummy-user/"
+  },
+  about:{
+    type: String,
+    default: "this is the default about."
+  },
+  skills:{
+    type: [String]
   }
-});
+},{ timestamps: true });
 
 const User=mongoose.model("User",userSchema);
 

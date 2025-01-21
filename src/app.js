@@ -12,7 +12,7 @@ app.post("/signup",async(req,res)=>{
     res.send(user);
   }
   catch(err){
-    res.status(400).send("error saving database");
+    res.status(400).send("error saving database"+ err.message);
   }
  
 })
@@ -72,11 +72,12 @@ app.delete("/user",async(req,res)=>{
 app.patch("/user",async(req,res)=>{
   const userId=req.body._id;
   try{
-    await User.findByIdAndUpdate(userId,req.body);
+    await User.findByIdAndUpdate(userId,req.body,{runValidators:true,upsert:true});
     res.send("user has been updated");
   }
   catch(err)
   {
+    
     res.status(404).send("Something went wrong!");
   }
 })
@@ -92,6 +93,7 @@ app.patch("/user",async(req,res)=>{
 
 
 connectDB().then(()=>{
+  User.syncIndexes();
   console.log("Database connection is successfull")
   app.listen(3000, () => {
     console.log("server is running successfully on port 3000...");

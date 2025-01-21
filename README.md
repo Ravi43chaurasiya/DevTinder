@@ -454,6 +454,198 @@ app.patch("/user",async(req,res)=>{
 ```
 - explore the mongoose documentation to learn more.
 
+# Data Sanitization & Schema Validations
+
+```javascript
+const mongoose=require("mongoose");
+
+const userSchema=new mongoose.Schema({
+  firstName:{
+    type:String,
+    required: true,
+    minLength: 4 ,
+    maxLength: 100
+
+  },
+  lastName:{
+    type:String
+  },
+  emailId:{
+    type:String,
+    required:true,
+    unique: true,
+    lowercase: true,
+    trim: true
+
+  },
+  password:{
+    type:String,
+    required:true
+  },
+  age:{
+    type:Number,
+    min: 18
+  },
+  gender:{
+    type:String,
+    validate(value){
+      if(!["male","female","oyhers"].includes(value)){
+        throw new Error("Gender data is not valid"); 
+      }
+    }
+  },
+  photoUrl:{
+    type: String,
+    default: "https://weimaracademy.org/dummy-user/"
+  },
+  about:{
+    type: String,
+    default: "this is the default about."
+  },
+  skills:{
+    type: [String]
+  }
+});
+
+const User=mongoose.model("User",userSchema);
+
+module.exports=User;
+```
+
+
+```markdown
+# Mongoose `findByIdAndUpdate`
+
+## What is `findByIdAndUpdate`?
+
+`findByIdAndUpdate` is a Mongoose method used to:
+1. Find a document in the database by its `_id`.
+2. Update the document with the provided data.
+3. Return either the **original document** or the **updated document** based on options.
+
+---
+
+## Usage
+
+```javascript
+Model.findByIdAndUpdate(id, update, options);
+```
+
+### Parameters:
+- **`id`**: The `_id` of the document you want to update.
+- **`update`**: The changes you want to apply to the document. Example: `{ name: 'John Doe' }`.
+- **`options`**: Additional settings to control how the method behaves (explained below).
+
+---
+
+## Key Options
+
+| Option Name                  | Description                                                                                      | Default Value      |
+|------------------------------|--------------------------------------------------------------------------------------------------|--------------------|
+| **`returnDocument`**         | Whether to return the document **before** or **after** the update.                              | `'before'`         |
+| **`new`**                    | If `true`, returns the **updated document** instead of the original.                            | `false`            |
+| **`runValidators`**          | If `true`, validates the update against the schema rules.                                       | `false`            |
+| **`upsert`**                 | If `true`, inserts a new document if no matching document is found.                             | `false`            |
+| **`lean`**                   | If `true`, returns the document as a plain JavaScript object instead of a Mongoose document.    | `false`            |
+| **`timestamps`**             | If `false`, skips updating the `createdAt` and `updatedAt` fields (if your schema uses timestamps). | `true`             |
+| **`sort`**                   | Sort the documents (if multiple exist) before updating.                                         | `undefined`        |
+
+---
+
+## Examples
+
+### 1. Basic Usage
+```javascript
+const updatedDoc = await Model.findByIdAndUpdate(
+    '123456',                          // The ID of the document to update
+    { name: 'John Doe' },              // The fields to update
+    { new: true }                      // Return the updated document
+);
+console.log(updatedDoc);
+```
+
+### 2. Using Validators
+```javascript
+const updatedDoc = await Model.findByIdAndUpdate(
+    '123456',
+    { email: 'invalid-email' },        // Invalid email
+    { runValidators: true }            // Ensures the email follows schema validation
+);
+```
+
+### 3. Insert a Document if Not Found (Upsert)
+```javascript
+const doc = await Model.findByIdAndUpdate(
+    'nonexistent_id',
+    { name: 'New User', email: 'new@example.com' },
+    { upsert: true, new: true }       // Insert the document if not found
+);
+console.log(doc);
+```
+
+### 4. Using `lean` to Get Plain JavaScript Object
+```javascript
+const plainObject = await Model.findByIdAndUpdate(
+    '123456',
+    { age: 25 },
+    { lean: true, new: true }         // Returns a plain JS object
+);
+console.log(plainObject);
+```
+
+---
+
+## How It Works Internally
+1. **Find the Document**: Looks for a document with the given `_id`.
+2. **Update the Document**:
+   - If the update doesn't contain special operators like `$set`, Mongoose automatically adds `$set` to it.
+   - Example:
+     ```javascript
+     Model.findByIdAndUpdate(id, { name: 'John' });
+     // Internally sent as:
+     Model.findByIdAndUpdate(id, { $set: { name: 'John' } });
+     ```
+3. **Return the Document**:
+   - Based on the `new` or `returnDocument` option, it either returns the original or the updated document.
+
+---
+
+## Important Notes
+1. **Validation**:
+   - By default, Mongoose does **not** run schema validation on updates.
+   - Use `runValidators: true` to validate the update.
+
+2. **When to Use `findByIdAndUpdate`**:
+   - Use it for simple updates where you don’t need to fetch the document first.
+   - For complex updates (e.g., conditional logic), retrieve the document first using `findById`, modify it, and save it.
+
+3. **Upserts**:
+   - If you enable `upsert: true`, Mongoose will create a new document if the `_id` is not found.
+
+---
+
+## Summary
+- `findByIdAndUpdate()` combines finding a document and updating it in one step.
+- You can customize the behavior with options like:
+  - **`new`**: Return the updated document.
+  - **`runValidators`**: Validate the update.
+  - **`upsert`**: Insert a new document if not found.
+
+---
+
+
+```
+### What Are Timestamps in Mongoose?
+Timestamps is a Mongoose feature that automatically adds two date fields to your documents:
+
+- createdAt: When the document was first created.
+- updatedAt: When the document was last updated.
+- To enable timestamps, set timestamps: true in your schema:
+
+```javascript
+
+const userSchema = new Schema({ name: String }, { timestamps: true });
+```
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).
