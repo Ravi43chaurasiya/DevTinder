@@ -69,16 +69,28 @@ app.delete("/user",async(req,res)=>{
 
 // API- update a User
 
-app.patch("/user",async(req,res)=>{
-  const userId=req.body._id;
+app.patch("/user/:userId",async(req,res)=>{
+  const userid=req.params?.userId;
+  const data=req.body;
   try{
-    await User.findByIdAndUpdate(userId,req.body,{runValidators:true,upsert:true});
+    const ALLOWED_UPDATES=["photourl","about","gender","age","skills"];
+    const isUpdateAllowed=Object.keys(data).every((k)=>{
+      return ALLOWED_UPDATES.includes(k);
+    })
+    if(!isUpdateAllowed){
+      throw new Error("update not allowed")
+    }
+    if(data.skills.length>10){
+      throw new Error("more than skills can not be inserted!")
+    }
+    const user=await User.findByIdAndUpdate(userid,data,{runValidators:true,upsert:true,returnDocument:"after"});
+    console.log(user);
     res.send("user has been updated");
   }
   catch(err)
   {
     
-    res.status(404).send("Something went wrong!");
+    res.status(404).send("Something went wrong!" + err.message);
   }
 })
  
