@@ -646,6 +646,46 @@ Timestamps is a Mongoose feature that automatically adds two date fields to your
 
 const userSchema = new Schema({ name: String }, { timestamps: true });
 ```
+## API level data sanitization
+
+## NPM validator
+
+- A library of string validators and sanitizers.
+
+## Strings only
+### This library validates and sanitizes strings only.
+- If you're not sure if your input is a string, coerce it using input + ''. Passing anything other than a string will result in an error.
+
+### Installation and Usage
+- Install the library with
+```javascript
+ npm install validator
+ ```
+ ```javascript
+ var validator = require('validator');
+
+validator.isEmail('foo@bar.com');
+```
+- example
+```javascript
+ emailId:{
+    type:String,
+    required:true,
+    unique: true,
+    lowercase: true,
+    trim: true,
+    validate(value){
+      if(!validator.isEmail(value)){
+        throw new Error("Invalid email address!");
+      }
+    }
+
+  }
+  ```
+  
+
+
+
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).
