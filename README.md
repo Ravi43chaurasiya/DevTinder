@@ -774,6 +774,17 @@ const jwt=require("jsonwebtoken");
   const decodedMessage=await jwt.verify(token,"dev@tinder$secretKey");
   console.log(decodedMessage);
   ```
+
+  - to make the token expire, we use expiresIn  attribute.
+  - example:
+```javascript
+ const token=await jwt.sign({_id:user._id},"dev@tinder$secretKey",{expiresIn:"1d"});
+ ```
+ - to make the cookies expire we use expires attribute.
+ - example:
+ ```javascript
+  res.cookie("token",token,{expires:new Date(Date.now()+ 8* 36000)});
+  ```
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).
