@@ -648,7 +648,7 @@ const userSchema = new Schema({ name: String }, { timestamps: true });
 ```
 ## API level data sanitization
 
-## NPM validator
+## NPM validator Library
 
 - A library of string validators and sanitizers.
 
@@ -666,7 +666,7 @@ const userSchema = new Schema({ name: String }, { timestamps: true });
 
 validator.isEmail('foo@bar.com');
 ```
-- example
+- example to understand validator.isEmail
 ```javascript
  emailId:{
     type:String,
@@ -682,9 +682,54 @@ validator.isEmail('foo@bar.com');
 
   }
   ```
-  
+# encrypting Password 
 
+## npm bcrypt package
+```javascript
+npm install bcrypt
+```
+- import the package
+```javascript
+const bcrypt=require("bcrypt");
+```
+- generate the password hash
+```javascript
+  const {password}=req.body;
+  // Encrypt the Password
+  const passwordHash=await bcrypt.hash(password,10)
+  console.log(passwordHash);
+  ```
+  - To check a password:
+  ```javascript
+  // Load hash from your password DB.
+bcrypt.compare(myPlaintextPassword, hash, function(err, result) {
+    // result == true
+});
+```
+- example:
+```javascript
+// Login Api
+app.post("/login",async(req,res)=>{
+  try{
+    const {emailId,password}=req.body;
+    const user=await User.findOne({emailId:emailId});
+    if(!user){
+      throw new Error("Invalid credential!");
+    }
+    const isPasswordValid=await bcrypt.compare(password,user.password);
 
+    if(isPasswordValid){
+      res.send("Login Successfull");
+    }
+    else{
+      throw new Error("invalid credential!");
+    }
+  }
+  catch(err){
+    res.status(400).send("error: "+ err.message);
+  }
+})
+```
 
 ---
 
