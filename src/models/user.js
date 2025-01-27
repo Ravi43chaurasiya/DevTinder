@@ -1,5 +1,7 @@
 const mongoose=require("mongoose");
 const validator=require("validator");
+const jwt=require("jsonwebtoken");
+const bcrypt=require("bcrypt");
 
 const userSchema=new mongoose.Schema({
   firstName:{
@@ -58,6 +60,21 @@ const userSchema=new mongoose.Schema({
     type: [String]
   }
 },{ timestamps: true });
+
+// this keyword does not work with arrow function.
+userSchema.methods.getJWT=async function(){
+  const user=this;
+  const token=await jwt.sign({_id:user._id},"dev@tinder$secretKey",{expiresIn:"1d"});
+  return token;
+}
+
+userSchema.methods.validatePassword=async function(passwordInputByUser){
+  const user=this;
+  const isPasswordValid=await bcrypt.compare(passwordInputByUser,user.password);
+
+  return isPasswordValid;
+  
+}
 
 const User=mongoose.model("User",userSchema);
 

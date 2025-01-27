@@ -785,6 +785,23 @@ const jwt=require("jsonwebtoken");
  ```javascript
   res.cookie("token",token,{expires:new Date(Date.now()+ 8* 36000)});
   ```
+  - schema methods
+  ```javascript
+  userSchema.methods.getJWT=async function(){
+  const user=this;
+  const token=await jwt.sign({_id:user._id},"dev@tinder$secretKey",{expiresIn:"1d"});
+  return token;
+}
+```
+```javascript
+userSchema.methods.validatePassword=async function(passwordInputByUser){
+  const user=this;
+  const isPasswordValid=await bcrypt.compare(passwordInputByUser,user.password);
+
+  return isPasswordValid;
+  
+}
+```
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).

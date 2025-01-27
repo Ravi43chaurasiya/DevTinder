@@ -42,11 +42,10 @@ app.post("/login",async(req,res)=>{
     if(!user){
       throw new Error("Invalid credential!");
     }
-    const isPasswordValid=await bcrypt.compare(password,user.password);
-
+    const isPasswordValid=await user.validatePassword(password);
     if(isPasswordValid){
       //Create a JWT Token
-        const token=await jwt.sign({_id:user._id},"dev@tinder$secretKey",{expiresIn:"1d"});
+        const token=await user.getJWT()
         console.log(token);
       //Add the token to cokkie and  send the respose back to the user.
       res.cookie("token",token,{expires:new Date(Date.now()+ 8* 36000)});
