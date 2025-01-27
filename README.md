@@ -730,7 +730,50 @@ app.post("/login",async(req,res)=>{
   }
 })
 ```
+---
+# Authentication, JWT & Cookies
+- while login , if login successfull, send the cookies.
+```javascript
+     //Create a JWT Token
 
+      //Add the token to cokkie and  send the respose back to the user.
+      res.cookie("token","adghlfddhglfgj;");
+ ```
+- in the subsequent request
+```javascript
+app.get("/profile",async(req,res)=>{
+  const cookies=req.cookies;
+  console.log(cookies);
+  res.send("reading cookies");
+})
+```
+- but console.log(cookies) will give undefined. to read the cookies we need a middleware named cookie-parser.
+
+```javascript
+npm i cookie-parser
+// require
+const cookieParser=require("cookie-parser");
+// use the middleware
+app.use(cookieParser());
+```
+- now you will be read the cookies.
+
+## JWT 
+- for more visit: https://jwt.io/
+- we will use npm package jsonwebtoken to generate JWT(json web tokens).
+
+```javascript
+npm install jsonwebtoken
+```
+
+```javascript
+const jwt=require("jsonwebtoken");
+//Create a JWT Token in login API
+  const token=await jwt.sign({_id:user._id},"dev@tinder$secretKey");
+// validate my token in subsequent request exp- profile API
+  const decodedMessage=await jwt.verify(token,"dev@tinder$secretKey");
+  console.log(decodedMessage);
+  ```
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).

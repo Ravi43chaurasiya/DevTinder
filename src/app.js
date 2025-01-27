@@ -3,9 +3,14 @@ const connectDB=require("./config/database")
 const User=require("./models/user");
 const {validateSignUpData}=require("./utils/validation");
 const bcrypt=require("bcrypt");
+const req = require("express/lib/request");
+const { cookie } = require("express/lib/response");
+const cookieParser=require("cookie-parser");
+const jwt=require("jsonwebtoken");
 
 const app = express();
 app.use(express.json())
+app.use(cookieParser());
 app.post("/signup",async(req,res)=>{
   
   try{
@@ -39,6 +44,13 @@ app.post("/login",async(req,res)=>{
     const isPasswordValid=await bcrypt.compare(password,user.password);
 
     if(isPasswordValid){
+      //Create a JWT Token
+        const token=await jwt.sign({_id:user._id},"dev@tinder$secretKey");
+        console.log(token);
+      //Add the token to cokkie and  send the respose back to the user.
+      res.cookie("token",token);
+
+
       res.send("Login Successfull");
     }
     else{
@@ -48,6 +60,33 @@ app.post("/login",async(req,res)=>{
   catch(err){
     res.status(400).send("error: "+ err.message);
   }
+})
+
+app.get("/profile",async(req,res)=>{
+  try{
+    const cookies=req.cookies;
+  const {token}=cookies;
+  if(!token){
+    throw new Error("Invalid TOken!")
+  }
+  // validate my token
+  const decodedMessage=await jwt.verify(token,"dev@tinder$secretKey");
+  console.log(decodedMessage);
+  const {_id}=decodedMessage;
+
+  console.log("Logged in user is: " + _id);
+
+  const user=await User.findById(_id);
+  if(!user){
+    throw new Error("user does not exist!");
+  }
+
+  res.send(user);
+  }
+  catch(err){
+    res.status(400).send("error: "+ err.message);
+  }
+  
 })
 
 
