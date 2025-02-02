@@ -813,6 +813,113 @@ module.exports=authRouter;
 ```
 
 ## logout API and profile/edit API has been Implemented.
+
+# Logical DB Query & Compound Indexes
+
+## connectionRequest collection
+```javascript
+
+const { type } = require("express/lib/response");
+const mongoose=require("mongoose");
+
+const connectionRequestSchema=new mongoose.Schema({
+  fromUserId:{
+    type:mongoose.Schema.Types.ObjectId,
+    required:true
+  },
+  toUserId:{
+    type:mongoose.Schema.Types.ObjectId,
+    required:true
+  },
+  status:{
+    type:String,
+    enum:{
+      values:["interested","ignored","accepted","rejected"],
+      message:"incorrect status value"
+    },
+    required:true
+  }
+
+},{
+  timestamps:true
+})
+
+const ConnectionRequest=new mongoose.model("ConnectionRequest",connectionRequestSchema);
+
+module.exports=ConnectionRequest;
+```
+## /request/send/status(ignored,interested)/userId
+
+```javascript
+requestsRouter.post("/request/send/:status/:userId",userAuth,async(req,res)=>{
+  try {
+    const allowedStatus=["interested","ignored"];
+    const fromUserId=req.user._id; // from the userAuth middleware
+    const toUserId=req.params.userId;
+    const status=req.params.status;
+
+    // check if toUserId exist in user collection
+
+    const isToUserExist=await User.findById(toUserId);
+
+    if(!isToUserExist){
+      return res.json({message:`${toUserId} does not exist in the database!`})
+    }
+
+    if(!allowedStatus.includes(status)){
+      return res.status(400).json({message:`${status} is an invalid status`})
+    }
+    
+    // A user can not send the connection request to himself/herself
+
+    if(fromUserId==toUserId){
+      return res.json({message:"you cant send connection request to yourself!"})
+    }
+    
+
+    const connectionRequest= new ConnectionRequest({
+      fromUserId:fromUserId,
+      toUserId:toUserId,
+      status:status
+    })
+     // is connection already exist
+    const isconnectionAlreadyExist= await ConnectionRequest.findOne({
+      $or:[
+      {fromUserId:fromUserId,
+        toUserId:toUserId
+      },
+      {
+        fromUserId:toUserId,
+        toUserId:fromUserId
+      }
+    ]})
+
+    if(isconnectionAlreadyExist){
+      return res.json({message:"connection already exist"
+      })
+    }
+
+    const data=await connectionRequest.save();
+    console.log(data);
+    res.send("connection request is successfull");
+
+    
+  } catch (error) {
+    res.status(400).send("error while sending connection requeest: "+ error);
+  }
+})
+```
+## explore index in moongose schema
+
+## explore pre middleware in moongose schrma
+```javascript
+schema.pre('save', function(next) {
+  const err = new Error('something went wrong');
+  // If you call `next()` with an argument, that argument is assumed to be
+  // an error.
+  next(err);
+});
+```
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).

@@ -41,13 +41,13 @@ authRouter.post("/login",async(req,res)=>{
         const token=await user.getJWT()
         console.log(token);
       //Add the token to cokkie and  send the respose back to the user.
-      res.cookie("token",token,{expires:new Date(Date.now()+ 8* 36000)});
+      res.cookie("token",token,{expires:new Date(Date.now()+ 8 * 360000)});
 
 
       res.send("Login Successfull");
     }
     else{
-      throw new Error("invalid credential!");
+      throw new Error("invalid password!");
     }
   }
   catch(err){
