@@ -802,6 +802,17 @@ userSchema.methods.validatePassword=async function(passwordInputByUser){
   
 }
 ```
+# express Router
+
+```javascript
+const express = require("express");
+
+const authRouter=express.Router();
+
+module.exports=authRouter;
+```
+
+## logout API and profile/edit API has been Implemented.
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).
