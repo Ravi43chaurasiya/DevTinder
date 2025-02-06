@@ -4,14 +4,6 @@ const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 
 const requestsRouter=express.Router();
-requestsRouter.post("/sendConnectionRequest",userAuth,async(req,res)=>{
-  const user=req.user;
-
-  // sending a connection request
-  console.log("sending a connection request!");
-
-  res.send(user.firstName + " sent the connection request!");
-})
 
 requestsRouter.post("/request/send/:status/:userId",userAuth,async(req,res)=>{
   try {
@@ -68,6 +60,43 @@ requestsRouter.post("/request/send/:status/:userId",userAuth,async(req,res)=>{
     
   } catch (error) {
     res.status(400).send("error while sending connection requeest: "+ error);
+  }
+})
+
+requestsRouter.post("/request/review/:status/:requestId",userAuth,async(req,res)=>{
+  try {
+    const loggedInUser=req.user;
+    const status=req.params.status;
+    const requestId=req.params.requestId;
+
+    // validate the status coming from request params, either it is ["accepted","rejected"] or not.
+
+    const allowedStatus=["accepted","rejected"];
+    if(!allowedStatus.includes(status)){
+      return res.json({message:"invalid Status!"});
+    }
+    // loggedInUser = toUserId
+    // status of the connection request should be "interested" only then we can accept or reject the request.
+    // requestId should be valid i.e it should be present in the DB.
+
+    const connectionRequest=await ConnectionRequest.findOne({
+      _id:requestId,
+      toUserId:loggedInUser._id,
+      status:"interested"
+    })
+
+    if(!connectionRequest){
+      return res.json({message:"connection does not found!"});
+    }
+
+    connectionRequest.status=status;
+
+    const data=await connectionRequest.save();
+
+    res.json({message:"request is "+ status,data});
+
+  } catch (error) {
+    res.status(400).send("Error "+ error.message);
   }
 })
 

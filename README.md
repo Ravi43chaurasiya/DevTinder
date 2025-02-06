@@ -920,6 +920,107 @@ schema.pre('save', function(next) {
   next(err);
 });
 ```
+
+## ref, Populate & Thought process of writing APIs
+
+### post /request/review/:status/:requestId
+```javascript
+requestsRouter.post("/request/review/:status/:requestId",userAuth,async(req,res)=>{
+  try {
+    const loggedInUser=req.user;
+    const status=req.params.status;
+    const requestId=req.params.requestId;
+
+    // validate the status coming from request params, either it is ["accepted","rejected"] or not.
+
+    const allowedStatus=["accepted","rejected"];
+    if(!allowedStatus.includes(status)){
+      return res.json({message:"invalid Status!"});
+    }
+    // loggedInUser = toUserId
+    // status of the connection request should be "interested" only then we can accept or reject the request.
+    // requestId should be valid i.e it should be present in the DB.
+
+    const connectionRequest=await ConnectionRequest.findOne({
+      _id:requestId,
+      toUserId:loggedInUser._id,
+      status:"interested"
+    })
+
+    if(!connectionRequest){
+      return res.json({message:"connection does not found!"});
+    }
+
+    connectionRequest.status=status;
+
+    const data=await connectionRequest.save();
+
+    res.json({message:"request is "+ status,data});
+
+  } catch (error) {
+    res.status(400).send("Error "+ error.message);
+  }
+})
+```
+### get /user/requests/received
+```javascript
+userRouter.get("/user/requests/received",userAuth,async(req,res)=>{
+  try {
+    const loggedInUser=req.user;
+    const safeData="firstName lastName photoUrl age gender about skills";
+    const connectionRequests=await ConnectionRequest.find({
+      toUserId: loggedInUser._id,
+      status: "interested",
+
+        }).populate("fromUserId", safeData);
+
+    res.json({
+      message:"Data fetched successfully",
+      data: connectionRequests
+    })    
+    
+  } catch (error) {
+    res.status(400).send("Error : "+ error.message);
+    
+  }
+})
+```
+### get /user/connections
+```javascript
+userRouter.get("/user/connections",userAuth,async(req,res)=>{
+  try {
+    const loggedInUser=req.user;
+    const safeData="firstName lastName photoUrl age gender about skills";
+    const connections=await ConnectionRequest.find({
+      $or:[
+        {
+          toUserId:loggedInUser._id,status:"accepted"
+        },
+        {
+          fromUserId:loggedInUser._id,
+          status:"accepted"
+        }
+      ]
+
+    }).populate("fromUserId",safeData)
+    .populate("toUserId",safeData);
+
+    const data=connections.map((row)=>{
+      if(row.fromUserId._id==loggedInUser._id){
+        return row.toUserId;
+      }
+
+      return row.fromUserId;
+    })
+
+    res.json({data:data});
+    
+  } catch (error) {
+    res.status(400).send("Error : "+ error.message);
+  }
+})
+```
+
 ---
 
 For more detailed information, refer to the [Express documentation](https://expressjs.com/).
