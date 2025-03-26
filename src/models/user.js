@@ -43,21 +43,22 @@ const userSchema=new mongoose.Schema({
   gender:{
     type:String,
     validate(value){
-      if(!["male","female","oyhers"].includes(value)){
+      if(!["male","female","others"].includes(value)){
         throw new Error("Gender data is not valid"); 
       }
     }
   },
   photoUrl:{
     type: String,
-    default: "https://weimaracademy.org/dummy-user/"
+    default: "https://weimaracademy.org/wp-content/uploads/2021/08/dummy-user.png"
   },
   about:{
     type: String,
     default: "this is the default about."
   },
   skills:{
-    type: [String]
+    type: [String],
+    default: []
   }
 },{ timestamps: true });
 

@@ -26,38 +26,33 @@ userRouter.get("/user/requests/received",userAuth,async(req,res)=>{
   }
 })
 
-userRouter.get("/user/connections",userAuth,async(req,res)=>{
+userRouter.get("/user/connections", userAuth, async (req, res) => {
   try {
-    const loggedInUser=req.user;
-    const safeData="firstName lastName photoUrl age gender about skills";
-    const connections=await ConnectionRequest.find({
-      $or:[
-        {
-          toUserId:loggedInUser._id,status:"accepted"
-        },
-        {
-          fromUserId:loggedInUser._id,
-          status:"accepted"
-        }
+    const loggedInUser = req.user;
+    const safeData = "firstName lastName photoUrl age gender about skills";
+
+    const connections = await ConnectionRequest.find({
+      $or: [
+        { toUserId: loggedInUser._id, status: "accepted" },
+        { fromUserId: loggedInUser._id, status: "accepted" }
       ]
-
-    }).populate("fromUserId",safeData)
-    .populate("toUserId",safeData);
-
-    const data=connections.map((row)=>{
-      if(row.fromUserId._id==loggedInUser._id){
-        return row.toUserId;
-      }
-
-      return row.fromUserId;
     })
+    .populate({ path: "fromUserId", select: safeData })
+    .populate({ path: "toUserId", select: safeData });
 
-    res.json({data:data});
-    
+    const data = connections.map(row => 
+      row.fromUserId._id.toString() === loggedInUser._id.toString() 
+        ? row.toUserId 
+        : row.fromUserId
+    );
+
+    return res.json({ data: data || [] });
+
   } catch (error) {
-    res.status(400).send("Error : "+ error.message);
+    res.status(400).json({ error: "Error: " + error.message });
   }
-})
+});
+
 
 userRouter.get("/feed",userAuth,async(req,res)=>{
   try {
@@ -106,7 +101,7 @@ userRouter.get("/feed",userAuth,async(req,res)=>{
     .skip(skip)
     .limit(limit);
 
-    res.json({users});
+    res.json({message:"feed has been fetched successfully.",data:users});
   } catch (error) {
     res.status(400).send("Error : "+ error.message);
   }

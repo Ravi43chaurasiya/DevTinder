@@ -8,7 +8,7 @@ const authRouter=express.Router();
 authRouter.post("/signup",async(req,res)=>{
   
   try{
-    const {firstName,lastName,emailId,password}=req.body;
+    const {firstName,lastName,emailId,password,age,gender,photoUrl,about,skills}=req.body;
     // validation of data
   validateSignUpData(req);
  
@@ -16,7 +16,7 @@ authRouter.post("/signup",async(req,res)=>{
   const passwordHash=await bcrypt.hash(password,10)
   console.log(passwordHash);
   const user=new User({
-    firstName,lastName,emailId,password:passwordHash
+    firstName,lastName,emailId,password:passwordHash,age,gender,photoUrl,about,skills
   });
   
     await user.save();
@@ -39,12 +39,12 @@ authRouter.post("/login",async(req,res)=>{
     if(isPasswordValid){
       //Create a JWT Token
         const token=await user.getJWT()
-        console.log(token);
+       
       //Add the token to cokkie and  send the respose back to the user.
       res.cookie("token",token,{expires:new Date(Date.now()+ 8 * 360000)});
 
 
-      res.send("Login Successfull");
+      res.send(user);
     }
     else{
       throw new Error("invalid password!");
