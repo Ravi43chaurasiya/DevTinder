@@ -19,8 +19,12 @@ authRouter.post("/signup",async(req,res)=>{
     firstName,lastName,emailId,password:passwordHash,age,gender,photoUrl,about,skills
   });
   
-    await user.save();
-    res.send(user);
+    const savedUser=await user.save();
+    const token=await savedUser.getJWT()
+       
+      //Add the token to cokkie and  send the respose back to the user.
+      res.cookie("token",token,{expires:new Date(Date.now()+ 24 * 360000)});
+    res.json({message:"User added successfully",data:savedUser})
   }
   catch(err){
     res.status(400).send("error: "+ err.message);
@@ -41,7 +45,7 @@ authRouter.post("/login",async(req,res)=>{
         const token=await user.getJWT()
        
       //Add the token to cokkie and  send the respose back to the user.
-      res.cookie("token",token,{expires:new Date(Date.now()+ 8 * 360000)});
+      res.cookie("token",token,{expires:new Date(Date.now()+ 24 * 360000)});
 
 
       res.send(user);
