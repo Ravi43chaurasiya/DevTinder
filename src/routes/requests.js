@@ -2,6 +2,7 @@ const express=require("express");
 const {userAuth}=require("../middleware/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
+// const sendEmail=require("../utils/sendEmail")
 
 const requestsRouter=express.Router();
 
@@ -54,7 +55,8 @@ requestsRouter.post("/request/send/:status/:userId",userAuth,async(req,res)=>{
     }
 
     const data=await connectionRequest.save();
-    console.log(data);
+    // const emailRes=await sendEmail.run("Connection request",req.user.firstName +"  "+ status + " in "+" you please login to dev-tinder.xyz and review the request!");
+    // console.log(emailRes);
     res.send("connection request is successfull");
 
     

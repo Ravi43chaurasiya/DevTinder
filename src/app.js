@@ -1,4 +1,5 @@
 const express = require("express");
+require('dotenv').config()
 const connectDB=require("./config/database")
 const User=require("./models/user");
 
@@ -14,8 +15,9 @@ const requestsRouter = require("./routes/requests");
 const userRouter=require("./routes/user");
 const cors=require("cors");
 
-require('dotenv').config()
-console.log(process.env)
+
+
+// console.log(process.env);
 
 
 const app = express();

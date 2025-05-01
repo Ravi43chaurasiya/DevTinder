@@ -1,3 +1,5 @@
 node_modules
 doctorQueue.js
 .env
+src/utils/sendEmail.js
+src/utils/sesClient.js
